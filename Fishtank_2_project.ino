@@ -1,6 +1,6 @@
 //   File:  Fishtank_2_project
 //
-//  Jason Chen, 2021-01-13, ME121 Hw 2
+//  Test line
 //
 //   Make temperature readings with a TMP36 sensor and display
 //   the readings on the OLED display along with
