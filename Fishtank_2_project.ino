@@ -190,7 +190,7 @@ void turnonHeater(float TexpAve)  {
 //  Turn on filter depending on if threshold
 //  has been reached
 //
-  void turnonFilter(float )  {
+  void turnonFilter(float WaterQuality )  {
 
   float setpoint = 6;                        // Declare water quality setpoint 
   float deadband = 1.0;                         // Declare deadband percentage
