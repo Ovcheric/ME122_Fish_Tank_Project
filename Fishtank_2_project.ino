@@ -1,10 +1,11 @@
 //   File:  Fishtank_2_project
 //
-//  Test line Herro
+//  Alex Bekwinknoll, Shaho Meman, Jason Chen, Eric Ovcharenko, Robert Hestand, Connor Hutchinson
 //
-//   Make temperature readings with a TMP36 sensor and display
-//   the readings on the OLED display along with
-//   the time in minutes
+//   Make temperature readings and water qulaity readings with a TMP36 sensor and 
+//   a photoresistor to determine when the heater and filter should turn on or off
+//   then display the readings on the OLED display along with the time in minutes
+//   in which the automatic feeder should engage
 
 // -- Libraries needed for the OLED display
 #include <Wire.h>               //  Wire.h provides I2C support
@@ -24,8 +25,8 @@ Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 float tstart;           // set tstart as a global varible
 
   int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
-  int Heaterpin = 11;
-  int Filterpin= 12; 
+  int Heaterpin = 11;                                   //  declare heater digital output 
+  int Filterpin= 12;                                    //  declare heater digital output
 // ------------------------------------------------------------------------------------
 void setup() {
 
@@ -34,12 +35,12 @@ void setup() {
 
   setupOLED();                                          // setup the OLED display
 
-  pinMode(Heaterpin, OUTPUT);
-  pinMode(Filterpin, OUTPUT);
+  pinMode(Heaterpin, OUTPUT);                           // declare pin as an output
+  pinMode(Filterpin, OUTPUT);                           // declare pin as an output
 
   tstart = millis();                                    // begin system clock in millis
 
-  Serial.println("  Time    Temp   ");                  // Header for Serial Monitor or Plotte
+  Serial.println("  Time    Temp   Water Quality  ");                  // Header for Serial Monitor or Plotte
   
 }
 
@@ -60,8 +61,8 @@ void loop() {
   TexpAve = readExpAveTMP36(TMP36pin, alf);             // Tempature readings from TMP36
 
 
-  turnonHeater(TexpAve);
-  turnonFilter( ) 
+  turnonHeater(TexpAve);                                // Turn on Heater
+  turnonFilter(Water Quality)                           // Turn on Filter
 
 
   //-- print time and tempature reading to the serial monitor
@@ -69,11 +70,11 @@ void loop() {
   Serial.print(timeMinutes);
   Serial.print("    ");
   Serial.println(TexpAve);
-  //Serial.print("   ");
-  //Serial.println (TBad);
+  Serial.print("   ");
+  Serial.println (WaterQuality);
   delay(200);
 
-  updateOLED(timeMinutes, TexpAve);                  // update OLED display
+  updateOLED(timeMinutes, TexpAve, WaterQuality);                  // update OLED display
 
 }
 
@@ -114,7 +115,7 @@ void setupOLED() {
 //  Display values of time in decimal minute and tempature readings on the micro OLED.
 //  This function assumes that OLED is a global Adafruit_SSD103 object.
 //
-void updateOLED(float timeMinutes, float TexpAve) {
+void updateOLED(float timeMinutes, float TexpAve, float WaterQuality) {
 
   OLED.clearDisplay();              // Clear the buffer.
 
@@ -138,8 +139,8 @@ void updateOLED(float timeMinutes, float TexpAve) {
   OLED.setCursor(0, 24);            // (x,y) coords to start.
   OLED.setTextSize(1);              // Select font size
   OLED.print(F("Water Quality = "));         // display "TBad" as a constant
-  //OLED.print(TBad);                 // display time when temp passes threshold
-  OLED.print(F(" min"));             // display "min" as a constant
+  OLED.print(WaterQuality);                 // display time when temp passes threshold
+  OLED.print(F(" unit"));             // display "min" as a constant
 
   OLED.display();                   // Update the display
 }
@@ -172,7 +173,7 @@ float readExpAveTMP36(int sensorPin, float alfa)  {
 //
 void turnonHeater(float TexpAve)  {
 
-  float setpoint = 6;                        // Declare relative humidity setpoint 
+  float setpoint = 6;                        // Declare temperature setpoint 
   float deadband = 1.0;                         // Declare deadband percentage
 
 
@@ -191,7 +192,7 @@ void turnonHeater(float TexpAve)  {
 //
   void turnonFilter(float )  {
 
-  float setpoint = 6;                        // Declare relative humidity setpoint 
+  float setpoint = 6;                        // Declare water quality setpoint 
   float deadband = 1.0;                         // Declare deadband percentage
 
 
