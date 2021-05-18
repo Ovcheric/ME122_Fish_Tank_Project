@@ -25,6 +25,7 @@ float tstart;           // set tstart as a global varible
 
   int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
   int Heaterpin = 11;
+  int Filterpin= 12; 
 // ------------------------------------------------------------------------------------
 void setup() {
 
@@ -34,6 +35,7 @@ void setup() {
   setupOLED();                                          // setup the OLED display
 
   pinMode(Heaterpin, OUTPUT);
+  pinMode(Filterpin, OUTPUT);
 
   tstart = millis();                                    // begin system clock in millis
 
@@ -59,6 +61,7 @@ void loop() {
 
 
   turnonHeater(TexpAve);
+  turnonFilter( ) 
 
 
   //-- print time and tempature reading to the serial monitor
@@ -174,13 +177,31 @@ void turnonHeater(float TexpAve)  {
 
 
   if (TexpAve < setpoint - deadband) {             // Test Level below lower deadpoint control limit
-    digitalWrite(Heaterpin, LOW);                // Turn fan off 
+    digitalWrite(Heaterpin, LOW);                // Turn heater off 
     delay(1000);
 
 
   } else if (TexpAve > setpoint + deadband ) {      // Test Level above upper deadpoint control limit
-    digitalWrite(Heaterpin, HIGH);                // Turn fan on 
+    digitalWrite(Heaterpin, HIGH);                // Turn heater on 
     delay(1000);
   }
-  
+// ---------------------------------------------------------------
+//  Turn on filter depending on if threshold
+//  has been reached
+//
+  void turnonFilter(float )  {
+
+  float setpoint = 6;                        // Declare relative humidity setpoint 
+  float deadband = 1.0;                         // Declare deadband percentage
+
+
+  if (TexpAve < setpoint - deadband) {             // Test Level below lower deadpoint control limit
+    digitalWrite(Filterpin, LOW);                // Turn filter off 
+    delay(1000);
+
+
+  } else if (TexpAve > setpoint + deadband ) {      // Test Level above upper deadpoint control limit
+    digitalWrite(Filterpin, HIGH);                // Turn filter on 
+    delay(1000);
+  }
 }
