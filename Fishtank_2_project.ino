@@ -45,7 +45,7 @@ void setup() {
   pinMode(Heaterpin, OUTPUT);                           // declare pin as an output
   pinMode(Filterpin, OUTPUT);                           // declare pin as an output
   
-  feederServo.attach(7);  // attaches the feederServo on pin 9 to the servo object
+  feederServo.attach(7);  // attaches the feederServo on pin 7 to the servo object
   
   pinMode(INPUT, pinCapPr);  //declares pins used in turbidity sensor
   pinMode(INPUT, pinSidePr);
