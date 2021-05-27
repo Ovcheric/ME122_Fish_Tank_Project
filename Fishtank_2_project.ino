@@ -11,6 +11,9 @@
 #include <Wire.h>               //  Wire.h provides I2C support
 #include <Adafruit_GFX.h>       //  Generic graphics library: fonts, lines, effects
 #include <Adafruit_SSD1306.h>   //  Library for the micro OLED display
+#include <Servo.h>              //  Libary for the servo
+
+Servo feederServo;  // create servo object called feederServo that controls the servo on the feeder
 
 // -- Create an SSD1306 object called OLED that is connected by I2C
 #define OLED_RESET      4  // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -37,6 +40,8 @@ void setup() {
 
   pinMode(Heaterpin, OUTPUT);                           // declare pin as an output
   pinMode(Filterpin, OUTPUT);                           // declare pin as an output
+  
+  feederServo.attach(7);  // attaches the feederServo on pin 9 to the servo object
 
   tstart = millis();                                    // begin system clock in millis
 
@@ -205,4 +210,21 @@ void turnonHeater(float TexpAve)  {
     digitalWrite(Filterpin, HIGH);                // Turn filter on 
     delay(1000);
   }
+}
+  
+//------------------------------------------------------------------------
+// function to 
+  
+  void dispenseFood()
+{
+  int pos1 = 0;    // position 1 is the position for the feeder to put food into the dispensing mechanism
+  int pos2 = 180;    // position 2 drops the food from the dispensing mechanism into the tank
+    
+  feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
+  delay(1000);                       // waits 1 s for the servo to reach the position
+
+  feederServo.write(pos2);              // tell servo to go to position in variable 'pos2'
+  delay(1500);                       // waits 1.5 s for the servo to reach the position
+
+  feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
 }
