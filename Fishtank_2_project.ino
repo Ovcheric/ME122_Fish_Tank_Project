@@ -77,7 +77,7 @@ void loop() {
 
 
   turnonHeater(TexpAve);                                // Turn on Heater
-  turnonFilter(Water Quality)                           // Turn on Filter
+  turnonFilter(Water Quality);                           // Turn on Filter
 
 
   //-- print time and tempature reading to the serial monitor
@@ -192,15 +192,16 @@ void turnonHeater(float TexpAve)  {
   float deadband = 0.5;                         // Declare deadband percentage
 
 
-  if (TexpAve < setpoint - deadband) {             // Test Level below lower deadpoint control limit
+  if (TexpAve < setpoint - deadband)   // Test Level below lower deadpoint control limit
+  {           
     digitalWrite(Heaterpin, HIGH);                // Turn heater on 
-    delay(100);
-
-
-  } else if (TexpAve > setpoint + deadband ) {      // Test Level above upper deadpoint control limit
+ } 
+  
+  else if (TexpAve > setpoint + deadband ) // Test Level above upper deadpoint control limit
+  {     
     digitalWrite(Heaterpin, LOW);                // Turn heater off 
-    delay(100);
   }
+  
 }
 // ---------------------------------------------------------------
 //  Turn on filter depending on if threshold
@@ -212,15 +213,18 @@ void turnonHeater(float TexpAve)  {
   float deadband = 1.0;                         // Declare deadband percentage
 
 
-  if (TexpAve < setpoint - deadband) {             // Test Level below lower deadpoint control limit
+  if (TexpAve < setpoint - deadband) 
+  {             // Test Level below lower deadpoint control limit
     digitalWrite(Filterpin, LOW);                // Turn filter off 
-    delay(1000);
+  }
 
 
-  } else if (TexpAve > setpoint + deadband ) {      // Test Level above upper deadpoint control limit
+   else if (TexpAve > setpoint + deadband ) // Test Level above upper deadpoint control limit
+   {      
     digitalWrite(Filterpin, HIGH);                // Turn filter on 
     delay(1000);
-  }
+   }
+    
 }
   
 //------------------------------------------------------------------------
