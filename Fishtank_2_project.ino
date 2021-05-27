@@ -201,6 +201,7 @@ void turnonHeater(float TexpAve)  {
     digitalWrite(Heaterpin, HIGH);                // Turn heater on 
     delay(1000);
   }
+}
 // ---------------------------------------------------------------
 //  Turn on filter depending on if threshold
 //  has been reached
