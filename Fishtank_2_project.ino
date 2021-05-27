@@ -30,6 +30,10 @@ float tstart;           // set tstart as a global varible
   int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
   int Heaterpin = 11;                                   //  declare heater digital output 
   int Filterpin= 12;                                    //  declare heater digital output
+
+const int pinCapPr = A1;
+const int pinSidePr = A3;       //pins of the photoresisters on the cap and side respectivly.
+const int turbidityLedPin = 6;  //pin fot the LED in the turbidity sensor
 // ------------------------------------------------------------------------------------
 void setup() {
 
@@ -42,6 +46,12 @@ void setup() {
   pinMode(Filterpin, OUTPUT);                           // declare pin as an output
   
   feederServo.attach(7);  // attaches the feederServo on pin 9 to the servo object
+  
+  pinMode(INPUT, pinCapPr);  //declares pins used in turbidity sensor
+  pinMode(INPUT, pinSidePr);
+  pinMode(OUTPUT, turbidityLedPin);
+  
+  analogWrite(turbidityLedPin, 255);  //turn on the turbidity sensor led
 
   tstart = millis();                                    // begin system clock in millis
 
@@ -213,7 +223,7 @@ void turnonHeater(float TexpAve)  {
 }
   
 //------------------------------------------------------------------------
-// function to 
+// function to dispenses food to the fish when called upon
   
   void dispenseFood()
 {
@@ -227,4 +237,27 @@ void turnonHeater(float TexpAve)  {
   delay(1500);                       // waits 1.5 s for the servo to reach the position
 
   feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
+}
+
+//---------------------------------------------------------------------------------------------
+// function that reports back an exponentaly averaged turbidity  
+  
+  float turbidity()
+{
+
+  float alfa = 0.2;
+  float ratio;
+  static float aveCapPr = 0, aveSidePr = 0;
+
+  for (int num1 = 1; num1 <= 3; num1 ++)
+  {
+    analogRead(pinCapPr);  // waste reading to prevent noise in data
+    aveCapPr = aveCapPr + alfa*(analogRead(pinCapPr) - aveCapPr);  // expoental averaging 
+       
+    analogRead(pinSidePr);  // waste reading to prevent noise in data
+    aveSidePr = aveSidePr + alfa*(analogRead(pinSidePr) - aveSidePr);  
+  }
+
+  ratio = (aveSidePr / aveCapPr);  //calculating the ratio between the side and endcap readings
+  return (ratio);
 }
