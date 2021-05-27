@@ -188,18 +188,18 @@ float readExpAveTMP36(int sensorPin, float alfa)  {
 //
 void turnonHeater(float TexpAve)  {
 
-  float setpoint = 6;                        // Declare temperature setpoint 
-  float deadband = 1.0;                         // Declare deadband percentage
+  float setpoint = 16.0;                        // Declare temperature setpoint 
+  float deadband = 0.5;                         // Declare deadband percentage
 
 
   if (TexpAve < setpoint - deadband) {             // Test Level below lower deadpoint control limit
-    digitalWrite(Heaterpin, LOW);                // Turn heater off 
-    delay(1000);
+    digitalWrite(Heaterpin, HIGH);                // Turn heater on 
+    delay(100);
 
 
   } else if (TexpAve > setpoint + deadband ) {      // Test Level above upper deadpoint control limit
-    digitalWrite(Heaterpin, HIGH);                // Turn heater on 
-    delay(1000);
+    digitalWrite(Heaterpin, LOW);                // Turn heater off 
+    delay(100);
   }
 }
 // ---------------------------------------------------------------
