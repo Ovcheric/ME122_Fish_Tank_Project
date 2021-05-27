@@ -69,15 +69,15 @@ void loop() {
 
 
   int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
-  float alf = 0.05;                                      //  Set Alpha to a value
-  float T, TexpAve;                                     //  declare tempature and averaged tempature
+  float alf = 0.05;                                     //  Set Alpha to a value
+  float T, TexpAve, turExpAve;                          //  declare tempature and averaged tempature
                                                         //  readings as a variable
 
   TexpAve = readExpAveTMP36(TMP36pin, alf);             // Tempature readings from TMP36
-
+  turExpAve = turbidity();                              //turbidity reading from sensor
 
   turnonHeater(TexpAve);                                // Turn on Heater
-  turnonFilter(Water Quality);                           // Turn on Filter
+  turnonFilter(turExpAve);                              // Turn on Filter
 
 
   //-- print time and tempature reading to the serial monitor
@@ -207,22 +207,21 @@ void turnonHeater(float TexpAve)  {
 //  Turn on filter depending on if threshold
 //  has been reached
 //
-  void turnonFilter(float WaterQuality )  {
+  void turnonFilter(float waterQuality )  {
 
-  float setpoint = 6;                        // Declare water quality setpoint 
-  float deadband = 1.0;                         // Declare deadband percentage
+  float setpoint = 1.2;                        // Declare water quality setpoint 
+  float deadband = 0.1;                         // Declare deadband percentage
 
 
-  if (TexpAve < setpoint - deadband) 
+  if (waterQuality > setpoint + deadband) 
   {             // Test Level below lower deadpoint control limit
-    digitalWrite(Filterpin, LOW);                // Turn filter off 
+    digitalWrite(Filterpin, HIGH);                // Turn filter on 
   }
 
 
-   else if (TexpAve > setpoint + deadband ) // Test Level above upper deadpoint control limit
+   else if (waterQuality < setpoint - deadband ) // Test Level above upper deadpoint control limit
    {      
-    digitalWrite(Filterpin, HIGH);                // Turn filter on 
-    delay(1000);
+    digitalWrite(Filterpin, LOW);                // Turn filter off 
    }
     
 }
