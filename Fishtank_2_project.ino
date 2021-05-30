@@ -2,7 +2,7 @@
 //
 //  Alex Bekwinknoll, Shaho Meman, Jason Chen, Eric Ovcharenko, Robert Hestand, Connor Hutchinson
 //
-//   Make temperature readings and water qulaity readings with a TMP36 sensor and 
+//   Make temperature readings and water qulaity readings with a TMP36 sensor and
 //   a photoresistor to determine when the heater and filter should turn on or off
 //   then display the readings on the OLED display along with the time in minutes
 //   in which the automatic feeder should engage
@@ -26,15 +26,16 @@ Servo feederServo;  // create servo object called feederServo that controls the 
 #define SCREEN_HEIGHT  32  // OLED display height in pixels
 Adafruit_SSD1306 OLED(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-//void setupOLED(); 
+//void setupOLED();
 #define  AMAX  1023.0   //  Maximum analog reading, expressed as float
 #define  VAMAX  3.6     //  Maximum voltage for ADC conversion of analog input
 
 float tstart;           // set tstart as a global varible
 
-  int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
-  int Heaterpin = 11;                                   //  declare heater digital output 
-  int Filterpin= 12;                                    //  declare heater digital output
+const int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
+const int Heaterpin = 11;                                   //  declare heater digital output
+const int Filterpin = 12;                                   //  declare heater digital output
+bool heater;    //keeps track if heater is on or off.
 
 const int pinCapPr = A1;
 const int pinSidePr = A3;       //pins of the photoresisters on the cap and side respectivly.
@@ -43,30 +44,30 @@ const int turbidityLedPin = 6;  //pin fot the LED in the turbidity sensor
 void setup() {
 
   Serial.begin(9600);                                   // setup serial monitor
-  while ( !Serial )  delay(10);
+  // while ( !Serial )  delay(10);
 
   setupOLED();                                          // setup the OLED display
 
   pinMode(Heaterpin, OUTPUT);                           // declare pin as an output
   pinMode(Filterpin, OUTPUT);                           // declare pin as an output
-  
+
   //LED Code
   pinMode(WaterHeaterLED, OUTPUT);       // declare pin as an output
   pinMode(WaterFilterLED, OUTPUT);    // declare pin as an output
   pinMode(ServoLED, OUTPUT);     // declare pin as an output
-  
-  feederServo.attach(7);  // attaches the feederServo on pin 7 to the servo object
-  
+
+  feederServo.attach(9);  // attaches the feederServo on pin 9 to the servo object
+
   pinMode(INPUT, pinCapPr);  //declares pins used in turbidity sensor
   pinMode(INPUT, pinSidePr);
   pinMode(OUTPUT, turbidityLedPin);
-  
+
   analogWrite(turbidityLedPin, 255);  //turn on the turbidity sensor led
 
   tstart = millis();                                    // begin system clock in millis
 
   Serial.println("  Time    Temp   Water Quality  ");                  // Header for Serial Monitor or Plotte
-  
+
 }
 
 // ------------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ void loop() {
   int TMP36pin = A0;                                    //  declare TMP36pin as a analog pin
   float alf = 0.05;                                     //  Set Alpha to a value
   float T, TexpAve, turExpAve;                          //  declare tempature and averaged tempature
-                                                        //  readings as a variable
+  //  readings as a variable
 
   TexpAve = readExpAveTMP36(TMP36pin, alf);             // Tempature readings from TMP36
   turExpAve = turbidity();                              //turbidity reading from sensor
@@ -94,12 +95,12 @@ void loop() {
   Serial.print("  ");
   Serial.print(timeMinutes);
   Serial.print("    ");
-  Serial.println(TexpAve);
+  Serial.print(TexpAve);
   Serial.print("   ");
-  Serial.println (WaterQuality);
+  Serial.println (turExpAve);
   delay(200);
 
-  updateOLED(timeMinutes, TexpAve, WaterQuality);                  // update OLED display
+  updateOLED(timeMinutes, TexpAve, turExpAve);                  // update OLED display
 
 }
 
@@ -140,32 +141,38 @@ void setupOLED() {
 //  Display values of time in decimal minute and tempature readings on the micro OLED.
 //  This function assumes that OLED is a global Adafruit_SSD103 object.
 //
-void updateOLED(float timeMinutes, float TexpAve, float WaterQuality) {
+void updateOLED(float timeMinutes, float TexpAve, float turExpAve) {
 
   OLED.clearDisplay();              // Clear the buffer.
 
-  OLED.setCursor(0, 0);             // (x,y) coords to start.  (0,0) is upper left
-  OLED.setTextSize(1);              // Select font size
-  OLED.print(F("Time = "));         // display "time =" as a constant
-  OLED.print(timeMinutes);          // print time reading in minutes
-  OLED.print(F(" min"));             // display "min" as a constant
-
-  OLED.setCursor(0, 8);             // (x,y) coords to start.
+  OLED.setCursor(0, 0);             // (x,y) coords to start.
   OLED.setTextSize(1);              // Select font size
   OLED.print(F("Temp = "));         // display "Temp" as a constant
   OLED.print(TexpAve);              // print tempature readings
   OLED.print(F(" C"));              // display "C" as a constant
 
-  OLED.setCursor(0, 16);            // (x,y) coords to start.
+  OLED.setCursor(0, 8);            // (x,y) coords to start.
   OLED.setTextSize(1);              // Select font size
   OLED.print(F("Threshold = "));    // display "Threshold" as a constant
-  OLED.print(F("20C"));              // display "9C" as a constant
+  OLED.print(F("16C"));              // display "9C" as a constant
 
   OLED.setCursor(0, 24);            // (x,y) coords to start.
   OLED.setTextSize(1);              // Select font size
   OLED.print(F("Water Quality = "));         // display "TBad" as a constant
-  OLED.print(WaterQuality);                 // display time when temp passes threshold
+  OLED.print(turExpAve);                 // display time when temp passes threshold
   OLED.print(F(" unit"));             // display "min" as a constant
+  
+  OLED.setCursor(0, 16);             // (x,y) coords to start.  (0,0) is upper left
+  OLED.setTextSize(1);              // Select font size
+  OLED.print(F("Heater: "));         // display "Heater: " as a constant
+  if (heater == 1)
+  {
+    OLED.print(F("on"));      // show heater is 'on' on oled
+  }
+  else if(heater == 0)
+  {
+    OLED.print(F("off"));    // show heater is 'off' on oled
+  }
 
   OLED.display();                   // Update the display
 }
@@ -198,75 +205,77 @@ float readExpAveTMP36(int sensorPin, float alfa)  {
 //
 void turnonHeater(float TexpAve)  {
 
-  float setpoint = 16.0;                        // Declare temperature setpoint 
+  float setpoint = 16.0;                        // Declare temperature setpoint
   float deadband = 0.5;                         // Declare deadband percentage
 
 
   if (TexpAve < setpoint - deadband)   // Test Level below lower deadpoint control limit
-  {           
-    digitalWrite(Heaterpin, HIGH);                // Turn heater on
-    digitalWrite(WaterHeaterLED, HIGH);           // Turn water heater LED on
- } 
-  
-  else if (TexpAve > setpoint + deadband ) // Test Level above upper deadpoint control limit
-  {     
-    digitalWrite(Heaterpin, LOW);                // Turn heater off 
-    digitalWrite(WaterHeaterLED, LOW);           // Turn water heater LED off
+  {
+    digitalWrite(Heaterpin, HIGH);              // Turn heater on
+    digitalWrite(WaterHeaterLED, HIGH);         // Turn water heater LED on
+    heater = 1;
   }
-  
+
+  else if (TexpAve > setpoint + deadband ) // Test Level above upper deadpoint control limit
+  {
+    digitalWrite(Heaterpin, LOW);                // Turn heater off
+    digitalWrite(WaterHeaterLED, LOW);           // Turn water heater LED off
+  heater = 0;
+  }
+
 }
 // ---------------------------------------------------------------
 //  Turn on filter depending on if threshold
 //  has been reached
 //
-  void turnonFilter(float waterQuality )  {
+void turnonFilter(float turExpAve )  {
 
-  float setpoint = 1.2;                        // Declare water quality setpoint 
+  float setpoint = 0.13;                        // Declare water quality setpoint
   float deadband = 0.1;                         // Declare deadband percentage
 
 
-  if (waterQuality > setpoint + deadband) 
-  {             // Test Level below lower deadpoint control limit
+  if (turExpAve > setpoint + deadband)
+  { // Test Level below lower deadpoint control limit
     digitalWrite(Filterpin, HIGH);                // Turn filter on
     digitalWrite(WaterFilterLED, HIGH);           // Turn water filter LED on
   }
-
-
-   else if (waterQuality < setpoint - deadband ) // Test Level above upper deadpoint control limit
-   {      
-    digitalWrite(Filterpin, LOW);                // Turn filter off 
+  if (turExpAve < setpoint - deadband ) // Test Level above lower deadpoint control limit
+  {
+    digitalWrite(Filterpin, LOW);                // Turn filter off
     digitalWrite(WaterFilterLED, LOW);           // Turn water filter LED off
-   }
-    
+  }
+
 }
-  
+
 //------------------------------------------------------------------------
 // function to dispenses food to the fish when called upon
-  
-  void dispenseFood()
+
+void dispenseFood()
 {
   int pos1 = 0;    // position 1 is the position for the feeder to put food into the dispensing mechanism
   int pos2 = 180;    // position 2 drops the food from the dispensing mechanism into the tank
-    
-  digitalWrite(ServoLED, HIGH);           // Turn Servo LED on
-    
-  feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
-  delay(1000);                       // waits 1 s for the servo to reach the position
 
-  feederServo.write(pos2);              // tell servo to go to position in variable 'pos2'
-  delay(1500);                       // waits 1.5 s for the servo to reach the position
+  for (int num1 = pos2; num1 >= pos1; num1 = num1 - 1) {      // tell servo to go to position in variable 'pos1'
+    // in steps of 1 degree
+    feederServo.write(num1);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
+  delay(1000);                         // waits 1 second when at position 1
 
-  feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
-  
-  digitalWrite(ServoLED, HIGH);           // Turn Servo LED off
+  for (int num2 = pos1; num2 <= pos2; num2 ++) {   // tell servo to go to position in variable 'pos2'
+    feederServo.write(num2);              // tell servo to go to position in variable 'num1'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
+  // tell servo to go to position in variable 'pos2'
+  delay(1500);                         // waits 1.5 seconds after reaching position 2
 
-  
-}
+
+} 
 
 //---------------------------------------------------------------------------------------------
-// function that reports back an exponentaly averaged turbidity  
-  
-  float turbidity()
+// function that reports back an exponentaly averaged turbidity
+
+float turbidity()
 {
 
   float alfa = 0.2;
@@ -276,10 +285,10 @@ void turnonHeater(float TexpAve)  {
   for (int num1 = 1; num1 <= 3; num1 ++)
   {
     analogRead(pinCapPr);  // waste reading to prevent noise in data
-    aveCapPr = aveCapPr + alfa*(analogRead(pinCapPr) - aveCapPr);  // expoental averaging 
-       
+    aveCapPr = aveCapPr + alfa * (analogRead(pinCapPr) - aveCapPr); // expoental averaging
+
     analogRead(pinSidePr);  // waste reading to prevent noise in data
-    aveSidePr = aveSidePr + alfa*(analogRead(pinSidePr) - aveSidePr);  
+    aveSidePr = aveSidePr + alfa * (analogRead(pinSidePr) - aveSidePr);
   }
 
   ratio = (aveSidePr / aveCapPr);  //calculating the ratio between the side and endcap readings
