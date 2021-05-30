@@ -13,6 +13,11 @@
 #include <Adafruit_SSD1306.h>   //  Library for the micro OLED display
 #include <Servo.h>              //  Libary for the servo
 
+//LED Set-Up
+int WaterHeaterLED = 13;
+int WaterFilterLED = 12;
+int ServoLED = 11;
+
 Servo feederServo;  // create servo object called feederServo that controls the servo on the feeder
 
 // -- Create an SSD1306 object called OLED that is connected by I2C
@@ -44,6 +49,11 @@ void setup() {
 
   pinMode(Heaterpin, OUTPUT);                           // declare pin as an output
   pinMode(Filterpin, OUTPUT);                           // declare pin as an output
+  
+  //LED Code
+  pinMode(WaterHeaterLED, OUTPUT);       // declare pin as an output
+  pinMode(WaterFilterLED, OUTPUT);    // declare pin as an output
+  pinMode(ServoLED, OUTPUT);     // declare pin as an output
   
   feederServo.attach(7);  // attaches the feederServo on pin 7 to the servo object
   
@@ -194,12 +204,14 @@ void turnonHeater(float TexpAve)  {
 
   if (TexpAve < setpoint - deadband)   // Test Level below lower deadpoint control limit
   {           
-    digitalWrite(Heaterpin, HIGH);                // Turn heater on 
+    digitalWrite(Heaterpin, HIGH);                // Turn heater on
+    digitalWrite(WaterHeaterLED, HIGH);           // Turn water heater LED on
  } 
   
   else if (TexpAve > setpoint + deadband ) // Test Level above upper deadpoint control limit
   {     
     digitalWrite(Heaterpin, LOW);                // Turn heater off 
+    digitalWrite(WaterHeaterLED, LOW);           // Turn water heater LED off
   }
   
 }
@@ -215,13 +227,15 @@ void turnonHeater(float TexpAve)  {
 
   if (waterQuality > setpoint + deadband) 
   {             // Test Level below lower deadpoint control limit
-    digitalWrite(Filterpin, HIGH);                // Turn filter on 
+    digitalWrite(Filterpin, HIGH);                // Turn filter on
+    digitalWrite(WaterFilterLED, HIGH);           // Turn water filter LED on
   }
 
 
    else if (waterQuality < setpoint - deadband ) // Test Level above upper deadpoint control limit
    {      
     digitalWrite(Filterpin, LOW);                // Turn filter off 
+    digitalWrite(WaterFilterLED, LOW);           // Turn water filter LED off
    }
     
 }
@@ -234,6 +248,8 @@ void turnonHeater(float TexpAve)  {
   int pos1 = 0;    // position 1 is the position for the feeder to put food into the dispensing mechanism
   int pos2 = 180;    // position 2 drops the food from the dispensing mechanism into the tank
     
+  digitalWrite(ServoLED, HIGH);           // Turn Servo LED on
+    
   feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
   delay(1000);                       // waits 1 s for the servo to reach the position
 
@@ -241,6 +257,10 @@ void turnonHeater(float TexpAve)  {
   delay(1500);                       // waits 1.5 s for the servo to reach the position
 
   feederServo.write(pos1);              // tell servo to go to position in variable 'pos1'
+  
+  digitalWrite(ServoLED, HIGH);           // Turn Servo LED off
+
+  
 }
 
 //---------------------------------------------------------------------------------------------
