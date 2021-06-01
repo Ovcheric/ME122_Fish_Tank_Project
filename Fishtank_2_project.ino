@@ -252,8 +252,8 @@ void turnonFilter(float turExpAve )  {
 
 void dispenseFood()
 {
-  int pos1 = 0;    // position 1 is the position for the feeder to put food into the dispensing mechanism
-  int pos2 = 180;    // position 2 drops the food from the dispensing mechanism into the tank
+  int pos1 = 5;    // position 1 is the position for the feeder to put food into the dispensing mechanism
+  int pos2 = 175;    // position 2 drops the food from the dispensing mechanism into the tank
 
   for (int num1 = pos2; num1 >= pos1; num1 = num1 - 1) {      // tell servo to go to position in variable 'pos1'
     // in steps of 1 degree
