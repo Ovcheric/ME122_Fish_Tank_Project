@@ -74,7 +74,7 @@ void setup() {
 // ------------------------------------------------------------------------------------
 void loop() {
 
-  unsigned float timeSeconds, timeMinutes;
+  ufloat timeSeconds, timeMinutes;
 
   timeSeconds = (millis() - tstart) / 1000.0;             // convert milliseconds to seconds
   timeMinutes = timeSeconds / 60.0;                       // convert seconds to Minutes
@@ -91,7 +91,7 @@ void loop() {
   turnonHeater(TexpAve);                                // Turn on Heater
   turnonFilter(turExpAve);                              // Turn on Filter
 
-  if( timeMinutes >= (15 + 720 * feeCount ) )
+  if( timeMinutes >= (15 + 720 * feedCount ) )
      {
       feedCount ++;
       dispenseFood();
