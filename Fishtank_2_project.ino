@@ -19,6 +19,7 @@ int WaterFilterLED = 12;
 int ServoLED = 11;
 
 Servo feederServo;  // create servo object called feederServo that controls the servo on the feeder
+unsigned int feedCount = 0;
 
 // -- Create an SSD1306 object called OLED that is connected by I2C
 #define OLED_RESET      4  // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -90,6 +91,11 @@ void loop() {
   turnonHeater(TexpAve);                                // Turn on Heater
   turnonFilter(turExpAve);                              // Turn on Filter
 
+  if( timeMinutes >= (15 + 720 * feeCount ) )
+     {
+      feedCount ++;
+      dispenseFood();
+     }
 
   //-- print time and tempature reading to the serial monitor
   Serial.print("  ");
