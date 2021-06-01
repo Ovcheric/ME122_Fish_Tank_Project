@@ -264,8 +264,12 @@ void dispenseFood()
 
   for (int num2 = pos1; num2 <= pos2; num2 ++) {   // tell servo to go to position in variable 'pos2'
     feederServo.write(num2);              // tell servo to go to position in variable 'num1'
+    digitalWrite(ServoLED, HIGH);           // Turn "Fisher Feeder" LED on
     delay(15);                       // waits 15ms for the servo to reach the position
   }
+  
+  digitalWrite(ServoLED, LOW);           // Turn "fish feeder" LED off
+  
   // tell servo to go to position in variable 'pos2'
   delay(1500);                         // waits 1.5 seconds after reaching position 2
 
