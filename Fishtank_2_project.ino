@@ -74,7 +74,7 @@ void setup() {
 // ------------------------------------------------------------------------------------
 void loop() {
 
-  float timeSeconds, timeMinutes;
+  unsigned float timeSeconds, timeMinutes;
 
   timeSeconds = (millis() - tstart) / 1000.0;             // convert milliseconds to seconds
   timeMinutes = timeSeconds / 60.0;                       // convert seconds to Minutes
