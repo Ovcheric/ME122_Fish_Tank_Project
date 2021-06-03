@@ -15,8 +15,8 @@
 
 //LED Set-Up
 int WaterHeaterLED = 5;
-int WaterFilterLED = 9;
-int ServoLED = 12;
+int WaterFilterLED = 6;
+int ServoLED = 13;
 
 Servo feederServo;  // create servo object called feederServo that controls the servo on the feeder
 unsigned int feedCount = 0;
@@ -43,6 +43,10 @@ const int pinSidePr = A3;       //pins of the photoresisters on the cap and side
 const int turbidityLedPin = 6;  //pin fot the LED in the turbidity sensor
 // ------------------------------------------------------------------------------------
 void setup() {
+  
+ digitalWrite(WaterHeaterLED,LOW);  //turn off all LEDs
+ digitalWrite(WaterFilterLED,LOW);
+ digitalWrite(ServoLED,LOW);
 
   Serial.begin(9600);                                   // setup serial monitor
   // while ( !Serial )  delay(10);
