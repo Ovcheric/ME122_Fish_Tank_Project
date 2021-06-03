@@ -14,9 +14,9 @@
 #include <Servo.h>              //  Libary for the servo
 
 //LED Set-Up
-int WaterHeaterLED = 13;
-int WaterFilterLED = 12;
-int ServoLED = 11;
+int WaterHeaterLED = 5;
+int WaterFilterLED = 9;
+int ServoLED = 12;
 
 Servo feederServo;  // create servo object called feederServo that controls the servo on the feeder
 unsigned int feedCount = 0;
